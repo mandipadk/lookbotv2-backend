@@ -1,0 +1,13 @@
+.env
+.env.*
+
+# Python
+__pycache__
+
+
+# Pytest
+.pytest_cache
+
+.coverage
+
+requirementstwo.txt
