@@ -3,9 +3,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "timescaledb" CASCADE;
 
 -- Create enum types
-CREATE TYPE IF NOT EXISTS order_side AS ENUM ('buy', 'sell');
-CREATE TYPE IF NOT EXISTS timeframe AS ENUM ('1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1mo');
-CREATE TYPE IF NOT EXISTS option_type AS ENUM ('call', 'put');
+CREATE TYPE order_side AS ENUM ('buy', 'sell');
+CREATE TYPE timeframe AS ENUM ('1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1mo');
+CREATE TYPE option_type AS ENUM ('call', 'put');
 
 -- Create non-timeseries tables first
 CREATE TABLE IF NOT EXISTS users (
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 -- Create timeseries tables (without indexes or unique constraints initially)
 CREATE TABLE IF NOT EXISTS market_data (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     timeframe timeframe NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS market_data (
 );
 
 CREATE TABLE IF NOT EXISTS technical_indicators (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     timeframe timeframe NOT NULL,
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS technical_indicators (
 );
 
 CREATE TABLE IF NOT EXISTS order_flow (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     price DECIMAL(20,6) NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS order_flow (
 );
 
 CREATE TABLE IF NOT EXISTS volume_profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     timeframe timeframe NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS volume_profiles (
 );
 
 CREATE TABLE IF NOT EXISTS dark_pool_trades (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     venue TEXT NOT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS dark_pool_trades (
 );
 
 CREATE TABLE IF NOT EXISTS options_flow (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     expiration_date DATE NOT NULL,
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS options_flow (
 );
 
 CREATE TABLE IF NOT EXISTS signals (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID KEY DEFAULT uuid_generate_v4(),
     symbol TEXT NOT NULL,
     timestamp TIMESTAMPTZ NOT NULL,
     signal_type TEXT NOT NULL,
@@ -234,13 +234,13 @@ CREATE INDEX IF NOT EXISTS idx_article_topics_topic ON article_topics(topic);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_time ON notifications(user_id, created_at DESC);
 
 -- Create indexes for timeseries tables
-CREATE INDEX IF NOT EXISTS idx_market_data_symbol ON market_data(symbol, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_technical_indicators_symbol ON technical_indicators(symbol, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_order_flow_symbol ON order_flow(symbol, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_volume_profiles_symbol ON volume_profiles(symbol, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_dark_pool_trades_symbol ON dark_pool_trades(symbol, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_options_flow_symbol ON options_flow(symbol, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_signals_symbol ON signals(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_market_data_symbol_timestamp ON market_data(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_technical_indicators_symbol_timestamp ON technical_indicators(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_order_flow_symbol_timestamp ON order_flow(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_volume_profiles_symbol_timestamp ON volume_profiles(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_dark_pool_trades_symbol_timestamp ON dark_pool_trades(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_options_flow_symbol_timestamp ON options_flow(symbol, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_signals_symbol_timestamp ON signals(symbol, timestamp DESC);
 
 -- Create JSONB indexes
 CREATE INDEX IF NOT EXISTS idx_users_settings ON users USING gin(settings);
@@ -277,93 +277,93 @@ ALTER TABLE signals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for authenticated users
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON users
+CREATE POLICY "Allow read for authenticated users" ON users
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON api_keys
+CREATE POLICY "Allow read for authenticated users" ON api_keys
     FOR SELECT TO authenticated USING (user_id = auth.uid());
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON watchlists
+CREATE POLICY "Allow read for authenticated users" ON watchlists
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON watchlist_items
+CREATE POLICY  "Allow read for authenticated users" ON watchlist_items
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON news_articles
+CREATE POLICY "Allow read for authenticated users" ON news_articles
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON article_symbols
+CREATE POLICY "Allow read for authenticated users" ON article_symbols
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON article_topics
+CREATE POLICY  "Allow read for authenticated users" ON article_topics
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON market_data
+CREATE POLICY "Allow read for authenticated users" ON market_data
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON technical_indicators
+CREATE POLICY "Allow read for authenticated users" ON technical_indicators
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON order_flow
+CREATE POLICY "Allow read for authenticated users" ON order_flow
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON volume_profiles
+CREATE POLICY  "Allow read for authenticated users" ON volume_profiles
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON dark_pool_trades
+CREATE POLICY  "Allow read for authenticated users" ON dark_pool_trades
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON options_flow
+CREATE POLICY "Allow read for authenticated users" ON options_flow
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read for authenticated users" ON signals
+CREATE POLICY "Allow read for authenticated users" ON signals
     FOR SELECT TO authenticated USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow read own notifications" ON notifications
+CREATE POLICY "Allow read own notifications" ON notifications
     FOR SELECT TO authenticated USING (user_id = auth.uid());
 
 -- Create policies for service role
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON users
+CREATE POLICY  "Allow all for service role" ON users
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON api_keys
+CREATE POLICY "Allow all for service role" ON api_keys
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON watchlists
+CREATE POLICY "Allow all for service role" ON watchlists
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON watchlist_items
+CREATE POLICY "Allow all for service role" ON watchlist_items
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON news_articles
+CREATE POLICY "Allow all for service role" ON news_articles
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON article_symbols
+CREATE POLICY  "Allow all for service role" ON article_symbols
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON article_topics
+CREATE POLICY "Allow all for service role" ON article_topics
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON market_data
+CREATE POLICY "Allow all for service role" ON market_data
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON technical_indicators
+CREATE POLICY "Allow all for service role" ON technical_indicators
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON order_flow
+CREATE POLICY "Allow all for service role" ON order_flow
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON volume_profiles
+CREATE POLICY "Allow all for service role" ON volume_profiles
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON dark_pool_trades
+CREATE POLICY "Allow all for service role" ON dark_pool_trades
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON options_flow
+CREATE POLICY "Allow all for service role" ON options_flow
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON signals
+CREATE POLICY "Allow all for service role" ON signals
     FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow all for service role" ON notifications
+CREATE POLICY "Allow all for service role" ON notifications
     FOR ALL TO service_role USING (true) WITH CHECK (true);

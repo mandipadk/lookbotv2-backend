@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     REDIS_URL: str
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    BACKEND_CORS_ORIGINS: List[str]
     
     # API Keys
     ALPHA_VANTAGE_API_KEY: str
