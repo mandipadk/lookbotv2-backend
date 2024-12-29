@@ -26,3 +26,4 @@ SQLAlchemy
 starlette
 twilio
 yfinance
+uvicorn
