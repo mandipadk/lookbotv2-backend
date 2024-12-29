@@ -64,7 +64,11 @@ async def shutdown_event():
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy"}
+    return {
+        "status": "OK",
+        "version": settings.VERSION,
+        "status_code": "200",
+        }
 
 @app.get("/")
 async def root():
