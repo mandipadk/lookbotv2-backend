@@ -11,9 +11,16 @@ class RedisClient:
     """Redis client wrapper."""
     def __init__(self):
         self._redis = None
-        self._connect()
+    
+    async def init(self):
+        await self._connect()
+    
+    async def close(self):
+        if self._redis:
+            await self._redis.close()
+            self._redis = None
 
-    def _connect(self):
+    async def _connect(self):
         """Connect to Redis."""
         try:
             if not self._redis:

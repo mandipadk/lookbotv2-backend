@@ -13,10 +13,12 @@ class Settings(BaseSettings):
     # Security
     JWT_SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    
+    JWT_ALGORITHM: str = "HS256"
+
     # Database
     SUPABASE_URL: str
     SUPABASE_KEY: str
+    DATABASE_URL: str
     
     # Redis
     REDIS_URL: str
@@ -28,14 +30,24 @@ class Settings(BaseSettings):
     ALPHA_VANTAGE_API_KEY: str
     FINNHUB_API_KEY: str
     FMP_API_KEY: str
-    NEWS_API_KEY: str
     SEC_API_KEY: str
     
     # Rate Limiting
     RATE_LIMIT_PER_SECOND: int = 10
     
+    # SMTP Settings
+    SMTP_HOST: str
+    SMTP_PORT: str
+    SMTP_USERNAME: str
+    SMTP_PASSWORD: str
+    SMTP_FROM_EMAIL: str
+
+    # User Agent
+    USER_AGENT: str
+
     class Config:
         env_file = ".env"
+        case_sensitive = True
 
 
 @lru_cache()

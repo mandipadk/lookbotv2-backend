@@ -15,7 +15,7 @@ from nltk.corpus import stopwords
 import yfinance as yf
 import re
 from collections import defaultdict
-from langchain.tools import YahooFinanceNewsTool
+from langchain_community.tools import YahooFinanceNewsTool
 import feedparser
 import json
 import requests
@@ -72,7 +72,13 @@ class NewsService:
         self._executor = ThreadPoolExecutor(max_workers=10)
         self.yahoo_news_tool = YahooFinanceNewsTool()
         self.sec_api = QueryApi(api_key=settings.SEC_API_KEY)
-        self._update_known_tickers()
+        self._initialized = False
+
+    async def initialize(self):
+        """Initialize the news service."""
+        if not self._initialized:
+            await self._update_known_tickers()
+            self._initialized = True
 
     async def _update_known_tickers(self):
         """Update the set of known stock tickers including penny stocks."""
