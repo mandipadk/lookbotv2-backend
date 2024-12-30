@@ -71,5 +71,6 @@ async def root():
     """Root endpoint."""
     return {
         "message": "Welcome to LookBot v2",
-        "version": settings.VERSION
+        "version": settings.VERSION,
+        "status": "200 OK"
     }
