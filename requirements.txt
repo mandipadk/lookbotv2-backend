@@ -16,8 +16,11 @@ pandas
 passlib
 protobuf
 pydantic
+pydantic[email]
 pydantic_settings
+pydantic_core
 pytest
+pytest-asyncio
 python-dotenv
 python_jose
 Requests
@@ -29,3 +32,5 @@ twilio
 yfinance
 uvicorn
 redis
+supabase
+python-multipart
