@@ -8,9 +8,10 @@ finnhub_python
 firebase_admin
 httpx
 Jinja2
-langchain
 nltk
 numpy
+langchain
+langchain-community
 pandas
 passlib
 protobuf
@@ -27,3 +28,4 @@ starlette
 twilio
 yfinance
 uvicorn
+redis
