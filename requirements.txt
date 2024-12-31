@@ -28,3 +28,4 @@ starlette
 twilio
 yfinance
 uvicorn
+redis
