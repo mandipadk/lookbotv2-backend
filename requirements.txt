@@ -30,3 +30,4 @@ yfinance
 uvicorn
 redis
 supabase
+python-multipart
